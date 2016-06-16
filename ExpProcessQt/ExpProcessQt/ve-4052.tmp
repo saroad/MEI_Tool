@@ -1,0 +1,52 @@
+#include "ExpressionList.h"
+#include "ui_ExpressionList.h"
+#include "klfbackend.h"
+#include <QDebug>
+#include <time.h>
+
+#include "Output.h"
+
+ExpressionList::ExpressionList(QWidget *parent):QMainWindow(parent),ui(new Ui::ExpressionList){
+
+    ui->setupUi(this);
+
+	input.mathmode = "\\[ ... \\]";
+
+    input.dpi = 100;
+    //ui->label->setMinimumHeight(input.dpi/2);
+	//ui->label->setFixedHeight(50);
+
+//    input.bg_color = qRgba(225, 225, 225, 225);
+    input.preamble = QString("\\usepackage{amssymb,amsmath,mathrsfs}");
+
+    if(!KLFBackend::detectSettings(&settings)) {
+        qDebug() << "unable to find LaTeX in default directories.";
+    } else {
+        qDebug() << "default settings working!";
+    }
+
+    // setup variables:
+    mPreviewBuilderThread = new KLFPreviewBuilderThread(this, input, settings);
+	QLabel *lbl1=new QLabel("Succcessful");
+	lbl1->setStyleSheet("border: 2px solid black");
+	QListWidgetItem * item1 = new QListWidgetItem();
+	ui->listWidget->addItem(item1);
+	ui->listWidget->setItemWidget(item1,lbl1);
+
+	QLabel *lbl2=new QLabel("Yes");
+	lbl2->setStyleSheet("border: 2px solid black");
+	QListWidgetItem * item2 = new QListWidgetItem();
+	ui->listWidget->addItem(item2);
+	ui->listWidget->setItemWidget(item2,lbl2);
+
+	ui->listWidget->setCurrentItem(item1);
+
+	//lbl1->
+	//ui->listView->show();
+}
+
+ExpressionList::~ExpressionList(){
+    //delete mPreviewBuilderThread;
+	qDebug()<<"Item Selected: "<<ui->listWidget->currentItem()->text();
+    delete ui;
+}
